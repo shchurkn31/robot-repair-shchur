@@ -12,3 +12,8 @@ Adventure Game: Robot Repair (Unity Technologies), Unity 6.3, URP.
 
 ## Що зроблено
 • Заняття 3: проєкт запущено, перемкнуто набір артів
+
+## 15.09.2026
+Створено тайл мап
+Додав рух персонажа з Time.deltaTime
+Додав CinemachineCamera з переслідуванням персонажа
