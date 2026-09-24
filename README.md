@@ -18,6 +18,8 @@ Adventure Game: Robot Repair (Unity Technologies), Unity 6.3, URP.
 Додав рух персонажа з Time.deltaTime
 Додав CinemachineCamera з переслідуванням персонажа
 
+--- 
+
 # 24.09.2026
 ### Що зроблено
 Перероблено тайлмап
