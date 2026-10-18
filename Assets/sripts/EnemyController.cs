@@ -1,49 +1,89 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
+    public float speed = 3.0f;
+    public bool vertical;
     public float changeTime = 3.0f;
+
+    Rigidbody2D rigidbody2d;
+    Animator animator;
     float timer;
     int direction = 1;
-    public float speed;
-    public bool vertical;
-    Rigidbody2D rigidbody2d;
+    bool broken = true; // 1. Ворог починає гру зламаним
+
     void Start()
-{
-    rigidbody2d = GetComponent<Rigidbody2D>();
-    timer = changeTime;
-}
+    {
+        rigidbody2d = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        timer = changeTime;
+    }
+
     void Update()
-{
-    timer -= Time.deltaTime;
-    if (timer < 0)
     {
-    direction = -direction;
-    timer = changeTime;
+        // Якщо ворог полагоджений, таймер і рух не потрібні
+        if (!broken) return;
+
+        timer -= Time.deltaTime;
+        if (timer < 0)
+        {
+            direction = -direction;
+            timer = changeTime;
+        }
     }
-}
+
     void FixedUpdate()
-{
-    
-    Vector2 position = rigidbody2d.position;
-    if (vertical)
     {
-        position.y = position.y + speed * direction * Time.deltaTime;
+        // 2. Полагоджений ворог одразу виходить і не рухається
+        if (!broken)
+        {
+            return;
+        }
+
+        Vector2 position = rigidbody2d.position;
+
+        if (vertical)
+        {
+            position.y = position.y + speed * direction * Time.deltaTime;
+            
+            if (animator != null && animator.runtimeAnimatorController != null)
+            {
+                animator.SetFloat("Move X", 0);
+                animator.SetFloat("Move Y", direction);
+            }
+        }
+        else
+        {
+            position.x = position.x + speed * direction * Time.deltaTime;
+            
+            if (animator != null && animator.runtimeAnimatorController != null)
+            {
+                animator.SetFloat("Move X", direction);
+                animator.SetFloat("Move Y", 0);
+            }
+        }
+
+        rigidbody2d.MovePosition(position);
     }
-    else
-    {
-        position.x = position.x + speed * direction * Time.deltaTime;
-    }
-    rigidbody2d.MovePosition(position);
-    
-}
+
     void OnTriggerEnter2D(Collider2D other)
-{
-    PlayerController player =
-    other.gameObject.GetComponent<PlayerController>();
-    if (player != null)
     {
-    player.ChangeHealth(-1);
+        PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            player.ChangeHealth(-1);
+        }
     }
-}
+
+    // 3. Публічна функція для ремонту ворога
+    public void Fix()
+    {
+        broken = false;
+        rigidbody2d.simulated = false; // Прибираємо з фізики (снаряди пролітають, шкоди гравцю немає)
+
+        if (animator != null && animator.runtimeAnimatorController != null)
+        {
+            animator.SetTrigger("Fixed");
+        }
+    }
 }
